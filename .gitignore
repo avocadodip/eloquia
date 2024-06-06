@@ -2,3 +2,4 @@
 /data/clips
 /papers
 /checkpoint*
+/__pycache__
