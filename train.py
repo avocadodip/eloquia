@@ -3,6 +3,39 @@ from data_utils import SoundDS, load_data
 from model_utils import get_model
 from torch.utils.data import random_split
 from transformers import Trainer, TrainingArguments
+from torch.optim import AdamW
+from transformers import get_scheduler
+
+class CustomTrainer(Trainer):
+    def create_optimizer_and_scheduler(self, num_training_steps: int):
+        """ Set up the custom optimizer and learning rate scheduler. """
+        # Custom AdamW optimizer with specific hyperparameters
+        optimizer = AdamW(self.model.parameters(), lr=3e-5, betas=(0.9, 0.98), eps=1e-6, weight_decay=0.1)
+        
+        # Linear learning rate scheduler with warmup
+        scheduler = get_scheduler(
+            "linear",
+            optimizer=optimizer,
+            num_warmup_steps=int(0.1 * num_training_steps),  # Warmup
+            num_training_steps=num_training_steps
+        )
+        
+        self.lr_scheduler = scheduler
+        self.optimizer = optimizer
+
+    def compute_loss(self, model, inputs, return_outputs=False):
+        """ Custom loss function computation. """
+        # Assuming model outputs are in a dictionary `outputs` with key 'logits'
+        outputs = model(**inputs)
+        logits = outputs.get('logits')
+        labels = inputs.get("labels")
+
+        # Using CrossEntropyLoss as an example
+        loss_fct = torch.nn.CrossEntropyLoss()
+        loss = loss_fct(logits.view(-1, self.model.config.num_labels), labels.view(-1))
+
+        return (loss, outputs) if return_outputs else loss
+
 
 def main():
     data_path = "data/ground_truth.csv"
@@ -19,21 +52,21 @@ def main():
     train_ds, val_ds, test_ds = random_split(myds, [num_train, num_val, num_test])
 
     args = TrainingArguments(
-        evaluation_strategy = "epoch",
-        save_strategy = "epoch",
-        learning_rate=3e-5,
-        per_device_train_batch_size=32,
-        gradient_accumulation_steps=4,
-        per_device_eval_batch_size=32,
-        num_train_epochs=5,
-        warmup_ratio=0.1,
-        logging_steps=10,
-        load_best_model_at_end=True,
-        metric_for_best_model="accuracy",
-        output_dir="./"
+        output_dir="./results",                # output directory
+        evaluation_strategy="epoch",           # evaluate at the end of each epoch
+        save_strategy="epoch",                 # save model at the end of each epoch
+        learning_rate=6.25e-6,                    # starting learning rate
+        per_device_train_batch_size=32,        # batch size for training
+        per_device_eval_batch_size=32,         # batch size for evaluation
+        num_train_epochs=5,                    # number of training epochs
+        warmup_ratio=0.1,                      # warmup steps as a ratio of total steps
+        logging_dir='./logs',                  # directory for storing logs
+        logging_steps=10,                      # log every 10 steps
+        load_best_model_at_end=True,           # load the best model at the end of training
+        metric_for_best_model="accuracy",      # use accuracy to find the best model
     )
 
-    trainer = Trainer(
+    trainer = CustomTrainer(
         model=model,
         args=args,
         train_dataset=train_ds,
