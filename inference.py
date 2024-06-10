@@ -1,16 +1,23 @@
 import torch
 from transformers import WhisperForAudioClassification, AutoFeatureExtractor
 import numpy as np
+import os
+from safetensors.torch import load_model
 
 # Load the model and feature extractor
-model_path = "./whisper_fine_tuned"
-feature_extractor_path = "./whisper_feature_extractor"
-model = WhisperForAudioClassification.from_pretrained(model_path)
-feature_extractor = AutoFeatureExtractor.from_pretrained(feature_extractor_path)
+token = os.getenv('HF_TOKEN')
+model_id = "openai/whisper-tiny"
+
+feature_extractor = AutoFeatureExtractor.from_pretrained(model_id, token=token)
+model = WhisperForAudioClassification.from_pretrained(model_id, token=token, num_labels=7, use_safetensors=True)
+
 
 # Set the device
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
+
+model = load_model(model, "results/checkpoint-515/model.safetensors")
+
 model.eval()
 
 class AudioUtil:
@@ -38,7 +45,7 @@ def predict(audio_file):
 def main():
     import sys
     if len(sys.argv) != 2:
-        print("Usage: python script_name.py <path_to_audio_file>")
+        print("Usage: python inference.py <path_to_audio_file>")
         sys.exit(1)
 
     audio_file_path = sys.argv[1]
