@@ -36,10 +36,10 @@ class CustomTrainer(Trainer):
 
         return (loss, outputs) if return_outputs else loss
 
-
 def main():
+
     data_path = "data/ground_truth.csv"
-    device = torch.device("cpu")
+    device = torch.device("cuda")
     
     df = load_data()
     model, feature_extractor = get_model(device)
@@ -53,17 +53,17 @@ def main():
 
     args = TrainingArguments(
         output_dir="./results",                # output directory
-        evaluation_strategy="epoch",           # evaluate at the end of each epoch
+        eval_strategy="epoch",                 # evaluate at the end of each epoch
         save_strategy="epoch",                 # save model at the end of each epoch
-        learning_rate=6.25e-6,                    # starting learning rate
-        per_device_train_batch_size=32,        # batch size for training
-        per_device_eval_batch_size=32,         # batch size for evaluation
+        learning_rate=6.25e-6,                 # starting learning rate
+        per_device_train_batch_size=16,        # batch size for training
+        per_device_eval_batch_size=16,         # batch size for evaluation
         num_train_epochs=5,                    # number of training epochs
         warmup_ratio=0.1,                      # warmup steps as a ratio of total steps
         logging_dir='./logs',                  # directory for storing logs
         logging_steps=10,                      # log every 10 steps
         load_best_model_at_end=True,           # load the best model at the end of training
-        metric_for_best_model="accuracy",      # use accuracy to find the best model
+        metric_for_best_model="f1",            # use f1 to find the best model
     )
 
     trainer = CustomTrainer(
