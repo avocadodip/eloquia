@@ -90,6 +90,14 @@ def main():
 
     trainer.train()
     print(trainer.evaluate())
+    kwargs = {
+        "dataset": "SEP-28k",  # a 'pretty' name for the training dataset
+        "language": "en",
+        "model_name": "Whisper Tiny for Stuttering Classification - Adi Kondepudi",  # a 'pretty' name for your model
+        "finetuned_from": "openai/whisper-tiny",
+        "tasks": "automatic-disfluency-recognition",
+    }
+    trainer.push_to_hub(**kwargs)
 
 if __name__ == "__main__":
     main()
