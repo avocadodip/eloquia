@@ -45,7 +45,6 @@ def compute_metrics(eval_pred):
     return {"f1": f1_score(labels, predictions, average='macro')}  # or average='binary' based on your problem
 
 def main():
-
     data_path = "data/ground_truth.csv"
     device = torch.device("cuda")
     
@@ -64,8 +63,8 @@ def main():
         eval_strategy="epoch",                 # evaluate at the end of each epoch
         save_strategy="epoch",                 # save model at the end of each epoch
         learning_rate=6.25e-6,                 # starting learning rate
-        per_device_train_batch_size=8,         # batch size for training
-        gradient_accumulation_steps=4,
+        per_device_train_batch_size=16,         # batch size for training
+        gradient_accumulation_steps=2,
         per_device_eval_batch_size=16,         # batch size for evaluation
         gradient_checkpointing=True,
         fp16=True,
@@ -90,14 +89,6 @@ def main():
 
     trainer.train()
     print(trainer.evaluate())
-    kwargs = {
-        "dataset": "SEP-28k",  # a 'pretty' name for the training dataset
-        "language": "en",
-        "model_name": "Whisper Tiny for Stuttering Classification - Adi Kondepudi",  # a 'pretty' name for your model
-        "finetuned_from": "openai/whisper-tiny",
-        "tasks": "automatic-disfluency-recognition",
-    }
-    trainer.push_to_hub(**kwargs)
 
 if __name__ == "__main__":
     main()
