@@ -70,11 +70,11 @@ def main():
         fp16=True,
         num_train_epochs=5,                    # number of training epochs
         warmup_ratio=0.1,                      # warmup steps as a ratio of total steps
-        logging_dir='./logs',                  # directory for storing logs
-        logging_steps=10,                      # log every 10 steps
+        logging_dir='./runs',                  # directory for storing logs
+        logging_steps=1,                      # log every 10 steps
         load_best_model_at_end=True,           # load the best model at the end of training
         metric_for_best_model="f1",            # use f1 to find the best model
-        report_to=["tensorboard"],             # use tensorboard
+        report_to="tensorboard",             # use tensorboard
         label_names=["labels"],
     )
 
