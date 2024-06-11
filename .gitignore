@@ -4,3 +4,4 @@
 /checkpoint*
 /__pycache__
 /logs
+/results
