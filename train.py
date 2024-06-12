@@ -85,7 +85,6 @@ def main():
     model, feature_extractor = get_model(device)
 
     myds = SoundDS(df, "", device)
-
     
     # num_items = len(myds)
     # num_train = round(num_items * 0.7)
@@ -101,7 +100,7 @@ def main():
         save_strategy="epoch",                 # save model at the end of each epoch
         learning_rate=6.25e-6,                 # starting learning rate
         per_device_train_batch_size=16,         # batch size for training
-        gradient_accumulation_steps=2,
+        gradient_accumulation_steps=8,
         per_device_eval_batch_size=16,         # batch size for evaluation
         gradient_checkpointing=True,
         fp16=True,
