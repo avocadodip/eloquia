@@ -7,6 +7,39 @@ from torch.optim import AdamW
 from transformers import get_scheduler
 import numpy as np
 
+from torch.utils.data import DataLoader, Subset
+from sklearn.model_selection import train_test_split
+
+def stratified_split(dataset, test_size=0.2, val_size=0.1):
+    # Extract class labels from the dataset
+    labels = [dataset.df.loc[i, 'classID'] for i in range(len(dataset))]
+    
+    # Split the dataset indices into training and temporary (test + validation) sets
+    train_idx, temp_idx, _, _ = train_test_split(
+        range(len(labels)),
+        labels,
+        stratify=labels,
+        test_size=test_size + val_size,
+        random_state=42  # for reproducibility
+    )
+    
+    # Now split the temporary set into test and validation sets
+    val_size_adjusted = val_size / (test_size + val_size)
+    val_idx, test_idx, _, _ = train_test_split(
+        temp_idx,
+        [labels[i] for i in temp_idx],
+        stratify=[labels[i] for i in temp_idx],
+        test_size=val_size_adjusted,
+        random_state=42  # for reproducibility
+    )
+    
+    # Create subset objects
+    train_ds = Subset(dataset, train_idx)
+    val_ds = Subset(dataset, val_idx)
+    test_ds = Subset(dataset, test_idx)
+
+    return train_ds, val_ds, test_ds
+
 class CustomTrainer(Trainer):
     def create_optimizer_and_scheduler(self, num_training_steps: int):
         """ Set up the custom optimizer and learning rate scheduler. """
@@ -52,11 +85,15 @@ def main():
     model, feature_extractor = get_model(device)
 
     myds = SoundDS(df, "", device)
-    num_items = len(myds)
-    num_train = round(num_items * 0.7)
-    num_val = round(num_items * 0.15)
-    num_test = num_items - num_train - num_val
-    train_ds, val_ds, test_ds = random_split(myds, [num_train, num_val, num_test])
+
+    
+    # num_items = len(myds)
+    # num_train = round(num_items * 0.7)
+    # num_val = round(num_items * 0.15)
+    # num_test = num_items - num_train - num_val
+    # train_ds, val_ds, test_ds = random_split(myds, [num_train, num_val, num_test])
+
+    train_ds, val_ds, test_ds = stratified_split(myds, test_size=0.15, val_size=0.15)
 
     args = TrainingArguments(
         output_dir="./results",                # output directory

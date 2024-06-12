@@ -15,11 +15,12 @@ def print_trainable_parameters(model):
 
 def get_model(device):
     token = os.getenv('HF_TOKEN')
-    model_id = "openai/whisper-large-v2"
+    model_id = "openai/whisper-tiny"
 
     feature_extractor = AutoFeatureExtractor.from_pretrained(model_id, token=token)
     model = WhisperForAudioClassification.from_pretrained(model_id, token=token, num_labels=7)
-
+    model.enable_input_require_grads()
+    
     config = LoraConfig(r=32, lora_alpha=64, target_modules=["q_proj", "v_proj"], lora_dropout=0.05, bias="none")
 
     model = get_peft_model(model, config)
