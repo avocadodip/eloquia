@@ -219,7 +219,16 @@ def main():
     
     # Predict class distribution for long audio
     class_counts = predict_long_audio(wav_file_path, model, device)
-    print("Class distribution:", class_counts)
+
+    class_labels = {0: 'NoStutteredWords', 1: 'Rep', 2: 'Interjection', 3: 'Prolongation', 4: 'Unsure', 5: 'Block', 6: 'NoSpeech'}
+    class_distribution = {class_labels[i]: count for i, count in enumerate(class_counts)}
+    
+    print("Class Distribution:")
+    print("-" * 30)  # print a line for better separation
+    for label, count in class_distribution.items():
+        print(f"{label:15} : {count:3}")
+    print("-" * 30)  # print a line for better separation
+
 
 if __name__ == "__main__":
     main()
