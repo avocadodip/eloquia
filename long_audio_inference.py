@@ -213,7 +213,7 @@ def main():
     model.to(device)
     
     # Load saved model weights
-    file_path = "results/checkpoint-515/model.safetensors"
+    file_path = "./model.safetensors"
     load_model(model, file_path)
     model.eval()
     
