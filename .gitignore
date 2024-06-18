@@ -4,3 +4,6 @@
 /checkpoint*
 /__pycache__
 /logs
+/notebooks
+/papers
+/old
