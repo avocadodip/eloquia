@@ -1,21 +1,47 @@
-Eloquia
+# Eloquia Project Repository
 
-https://github.com/apple/ml-stuttering-events-dataset
+## Overview
+This repository contains the machine learning model and supporting scripts for the Eloqia venture, designed to improve speech fluency through AI-powered analysis. Eloquia leverages audio data to detect and analyze speech patterns, aiding in the development of personalized speech therapy tools.
 
-https://www.kaggle.com/datasets/ikrbasak/sep-28k
+## Contents
+- `model_utils.py`: Utility functions for model operations.
+- `data_utils.py`: Functions for handling and preparing data.
+- `train.py`: Entry point for training the speech analysis model.
+- `inference.py`: Script to perform inference using the trained model.
+- `long_audio_inference.py`: Extends inference capabilities to handle long-duration audio files.
 
+### Data
+- `data/`: Folder containing necessary datasets and label files for model training and testing.
+- `mel_filters.npz`: Mel filter bank for feature extraction from audio files.
 
-Using Environment Variables
-Set an Environment Variable:
+### Model
+- `model.safetensors`: Pre-trained machine learning model ready for deployment and further training.
 
-On Windows:
-Open Command Prompt and set the variable by typing: setx HF_TOKEN "your_hf_token_here". This sets the environment variable permanently.
-Alternatively, you can set it for the current session only by using set HF_TOKEN="your_hf_token_here" in the command line.
-On macOS/Linux:
-Open Terminal and add the export command to your shell configuration file (.bashrc, .bash_profile, or .zshrc): echo 'export HF_TOKEN="your_hf_token_here"' >> ~/.bashrc (replace .bashrc with your configuration file as needed).
-Reload the configuration file: source ~/.bashrc (replace with your specific file).
-Environment variables can be accessed in Python using the os module:
-python
-Copy code
-import os
-hf_token = os.getenv('HF_TOKEN')
+### Additional Files
+- `long_test.mp3`: Test audio file to demonstrate the inference process.
+- `.gitignore`: File specifying untracked files like logs and local configuration.
+
+## Setup
+Ensure Python 3.8+ is installed. Install required dependencies via:
+```bash
+pip install -r requirements.txt
+```
+
+## Usage
+To train the model, run:
+```bash
+python train.py
+```
+
+For running inference:
+```bash
+python inference.py [AUDIO_FILE]
+```
+
+To process long audio files:
+```bash
+python long_audio_inference.py [AUDIO_FILE]
+```
+
+## Setup
+For further inquiries, contact akondep1@jh.edu
