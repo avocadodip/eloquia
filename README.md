@@ -1,4 +1,4 @@
-# Eloquia Project Repository
+# Eloquia Project Repository 
 
 ## Overview
 This repository contains the machine learning model and supporting scripts for the Eloqia venture, designed to improve speech fluency through AI-powered analysis. Eloquia leverages audio data to detect and analyze speech patterns, aiding in the development of personalized speech therapy tools.
